@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+// ToDoList App made by Zimbakov Tech
+
 void main() => runApp(MaterialApp(
       theme: ThemeData(
           primarySwatch: Colors.grey,
