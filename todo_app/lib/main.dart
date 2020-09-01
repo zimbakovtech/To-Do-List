@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 void main() => runApp(MaterialApp(
-      theme: ThemeData(visualDensity: VisualDensity.adaptivePlatformDensity),
+      theme: ThemeData(
+          primarySwatch: Colors.grey,
+          visualDensity: VisualDensity.adaptivePlatformDensity),
       debugShowCheckedModeBanner: false,
       home: MyHomePage(),
     ));
@@ -12,11 +16,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final Color primaryColor = Colors.blue;
+  final Color primaryColor = Colors.red[600];
   final Color secondaryColor = Colors.white;
+  final Color thirdColor = Colors.grey[850];
   List todos = List();
   String value;
   List state = List();
+  String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
   @override
   void initState() {
@@ -25,29 +31,44 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: thirdColor,
       appBar: AppBar(
+        backgroundColor: primaryColor,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(60.0))),
-        title: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text(
+        title: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
                 'To-Do List',
                 style: TextStyle(
                   fontSize: 27.0,
                   fontWeight: FontWeight.bold,
+                  color: secondaryColor,
                 ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: 12.0,
+              ),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: secondaryColor,
+                ),
+              )
+            ],
+          ),
         ),
-        toolbarHeight: 180.0,
+        toolbarHeight: 150.0,
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 60.0),
         child: FloatingActionButton(
+          tooltip: 'Add new task',
           backgroundColor: secondaryColor,
           child: Icon(
             Icons.add,
@@ -61,13 +82,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: Text(
                       'Add new task',
                       style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+                          color: thirdColor, fontWeight: FontWeight.bold),
                     ),
                     content: Container(
-                      height: 110.0,
+                      height: 115.0,
+                      width: 100.0,
                       child: Column(
                         children: [
                           TextField(
+                            autocorrect: true,
+                            textCapitalization: TextCapitalization.sentences,
+                            maxLength: 30,
                             autofocus: true,
                             decoration: InputDecoration(
                               hintText: 'Add new task...',
@@ -77,9 +102,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                 value = result;
                               });
                             },
+                            textInputAction: TextInputAction.go,
+                            onSubmitted: (value) {
+                              setState(() {
+                                todos.add(value);
+                                Navigator.of(context).pop();
+                                state.add(false);
+                              });
+                            },
                           ),
                           SizedBox(
-                            height: 30.0,
+                            height: 10.0,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -137,21 +170,33 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: Text(
                     todos[index],
                     style: TextStyle(
+                        fontSize: 17.0,
                         decoration: (state[index] == true)
                             ? TextDecoration.lineThrough
                             : null,
                         color:
                             (state[index] == true) ? Colors.grey[600] : null),
                   ),
+                  subtitle: Text(date),
                   leading: IconButton(
+                    tooltip: 'Mark as done',
                     icon: Icon(Icons.check_box),
                     onPressed: () {
                       setState(() {
                         state[index] = !state[index];
                       });
                     },
-                    color: (state[index] == true) ? Colors.blue : Colors.grey,
+                    color: (state[index] == true) ? primaryColor : Colors.grey,
                   ),
+                  trailing: IconButton(
+                      tooltip: 'Delete task',
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          todos.removeAt(index);
+                        });
+                      },
+                      color: primaryColor),
                 ),
               );
             }),
