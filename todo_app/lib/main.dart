@@ -12,32 +12,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final Color primaryColor = Colors.blueAccent;
+  final Color primaryColor = Colors.blue;
   final Color secondaryColor = Colors.white;
   List todos = List();
   String value;
+  List state = List();
 
   @override
   void initState() {
     super.initState();
-    todos.add('Item1');
-    todos.add('Item2');
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
-        title: Text(
-          'To-Do List',
-          style: TextStyle(
-            fontSize: 27.0,
-            fontWeight: FontWeight.bold,
-          ),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(60.0))),
+        title: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                'To-Do List',
+                style: TextStyle(
+                  fontSize: 27.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
-        toolbarHeight: 80.0,
-        backgroundColor: primaryColor,
-        centerTitle: true,
+        toolbarHeight: 180.0,
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 60.0),
@@ -54,13 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   return AlertDialog(
                     title: Text(
                       'Add new task',
-                      style: TextStyle(color: Colors.blue),
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     content: Container(
                       height: 110.0,
                       child: Column(
                         children: [
                           TextField(
+                            autofocus: true,
                             decoration: InputDecoration(
                               hintText: 'Add new task...',
                             ),
@@ -77,12 +85,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               FlatButton(
-                                color: secondaryColor,
+                                color: primaryColor,
                                 child: Text(
                                   'Cancel',
                                   style: TextStyle(
                                     fontSize: 16.0,
-                                    color: Colors.blue,
+                                    color: secondaryColor,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -91,12 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },
                               ),
                               FlatButton(
-                                color: secondaryColor,
+                                color: primaryColor,
                                 child: Text(
                                   'Add',
                                   style: TextStyle(
                                     fontSize: 16.0,
-                                    color: Colors.blue,
+                                    color: secondaryColor,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -104,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   setState(() {
                                     todos.add(value);
                                     Navigator.of(context).pop();
+                                    state.add(false);
                                   });
                                 },
                               ),
@@ -118,15 +127,35 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: ListView.builder(
-          itemCount: todos.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: ListTile(
-                title: Text(todos[index]),
-              ),
-            );
-          }),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: ListView.builder(
+            itemCount: todos.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                child: ListTile(
+                  title: Text(
+                    todos[index],
+                    style: TextStyle(
+                        decoration: (state[index] == true)
+                            ? TextDecoration.lineThrough
+                            : null,
+                        color:
+                            (state[index] == true) ? Colors.grey[600] : null),
+                  ),
+                  leading: IconButton(
+                    icon: Icon(Icons.check_box),
+                    onPressed: () {
+                      setState(() {
+                        state[index] = !state[index];
+                      });
+                    },
+                    color: (state[index] == true) ? Colors.blue : Colors.grey,
+                  ),
+                ),
+              );
+            }),
+      ),
     );
   }
 }
